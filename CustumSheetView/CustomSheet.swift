@@ -12,6 +12,8 @@ struct CustomSheet: View {
     @Binding var isShowing: Bool
     let height: CGFloat
     let width: CGFloat
+    @GestureState private var dragState = CGSize.zero
+    @State private var offsetY: CGFloat = 0
 
     // MARK: - Body
     var body: some View {
@@ -29,14 +31,36 @@ struct CustomSheet: View {
 
                     VStack {
                         Text("カスタムシートが表示された")
+
+                        HStack {
+                            Text("hyouji")
+                        }
                     }
                     .frame(maxWidth: .infinity)
                     .frame(maxHeight: height / 4)
-                    .background(.white)
+                    .background(Color.white)
                     .cornerRadius(16, corners: [.topLeft, .topRight])
+                    .offset(y: offsetY + (dragState.height > 0 ? dragState.height : 0)) // 下方向のドラッグのみ許可
+                    .gesture(
+                        DragGesture()
+                            .updating($dragState) { value, state, _ in
+                                if value.translation.height > 0 {
+                                    state = value.translation
+                                }
+                            }
+                            .onEnded { value in
+                                if value.translation.height > 100 {
+//                                    withAnimation {
+                                        isShowing = false
+//                                    }
+                                } else {
+//                                    withAnimation {
+                                        offsetY = 0
+//                                    }
+                                }
+                            }
+                    )
                     .transition(.opacity.combined(with: .move(edge: .bottom)))
-                } else {
-                    // 何もしない
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -44,8 +68,8 @@ struct CustomSheet: View {
             .animation(.easeInOut, value: isShowing)
         }
         .edgesIgnoringSafeArea(.all)
-    } // body
-} // view
+    }
+}
 
 private struct RoundedCorner: Shape {
     // MARK: - Properties
