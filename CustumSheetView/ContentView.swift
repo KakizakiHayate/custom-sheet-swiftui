@@ -9,17 +9,17 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var isShowingCustomSheet = false
+
     var body: some View {
         GeometryReader { geometry in
             let height = geometry.size.height
-            let width = geometry.size.width
             ZStack {
                 Button {
-                    self.isShowingCustomSheet = true
+                    self.isShowingCustomSheet.toggle()
                 } label: {
                     Text("シートを表示する")
                 }
-                CustomSheet(isShowing: $isShowingCustomSheet, height: height, width: width)
+                CustomSheet(isShowing: $isShowingCustomSheet, height: height)
             }
         }
     }
